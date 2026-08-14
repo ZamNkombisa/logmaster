@@ -80,7 +80,7 @@ On the backend, I kept things split into three layers:
 - **Services** hold the actual logic — validation, the compliance rule engine, building the context sent to the Copilot
 - **Repositories** wrap EF Core, so the rest of the app doesn't need to know it's talking to SQL Server specifically
 
-Most entities share one generic repository (`Repository<T>`) for basic CRUD. Trips needed a bit more — loading related data, filtering by driver — so I added a specific `ITripRepository` on top rather than making the generic one more complicated for everyone else.
+Most entities share one generic repository (`Repository<T>`) for basic CRUD. Trips needed a bit more — loading related data, filtering by driver, so I added a specific `ITripRepository` on top rather than making the generic one more complicated for everyone else.
 
 ---
 
@@ -155,20 +155,20 @@ The rule engine (`Services/Compliance/HosComplianceEngine.cs`) checks a trip's d
 | `HOS-8HR-BREAK` | More than 8 hours of driving without a 30-minute break |
 | `HOS-10HR-RESET` | Less than 10 hours off duty before this trip started |
 
-Compliance is checked when you click "Evaluate compliance," not automatically after every log entry — mainly because the reset rule needs to look back at the driver's previous trip, so it made more sense to recheck everything at once rather than try to track it incrementally.
+Compliance is checked when you click "Evaluate compliance," not automatically after every log entry, mainly because the reset rule needs to look back at the driver's previous trip, so it made more sense to recheck everything at once rather than try to track it incrementally.
 
 ---
 
 ## Compliance Copilot
 
-This is a small chat assistant scoped to one trip at a time — not a general chatbot that knows about your whole fleet.
+This is a small chat assistant scoped to one trip at a time, not a general chatbot that knows about your whole fleet.
 
 When you ask it something, here's what actually happens:
 1. The backend pulls that trip's real data — driver, vehicle, the full duty log, and any flags already recorded
 2. That data gets formatted and added to the prompt sent to the LLM, along with an instruction to only answer from what's given and say so if it doesn't know
 3. Groq's Llama 3.3 70B generates the answer, which comes back to the chat widget
 
-I didn't use a vector database for this — the amount of data per question is small and scoped to one trip, so a full embeddings/RAG pipeline would've been overkill. It's still genuinely retrieval-based, just simpler than that.
+I didn't use a vector database for this, the amount of data per question is small and scoped to one trip, so a full embeddings/RAG pipeline would've been overkill. It's still genuinely retrieval-based, just simpler than that.
 
 You'll find it as a floating chat button on the trip detail page (Admin/Dispatcher only for now).
 
@@ -188,10 +188,10 @@ One thing that tripped me up building this: browsers can't set an Authorization 
 
 Being upfront about this rather than pretending everything's flawless:
 
-- Testing GPS from a laptop uses browser-based location (Wi-Fi/network based), not real GPS — it can jump around indoors. Works fine on an actual phone.
+- Testing GPS from a laptop uses browser-based location (Wi-Fi/network based), not real GPS, it can jump around indoors. Works fine on an actual phone.
 - The auto duty-status feature checks every minute, so it's not exact to the second.
-- Address search and routing use free public services (Nominatim/OSRM) with fairly low rate limits — fine for this project, wouldn't hold up at real scale.
-- The Azure SQL firewall is currently open pretty wide, since my home IP kept changing while developing. I'd lock that down properly before deploying anything real.
+- Address search and routing use free public services (Nominatim/OSRM) with fairly low rate limits, fine for this project, wouldn't hold up at real scale.
+- The Azure SQL firewall is currently open pretty wide, since my home IP kept changing while developing. I will lock that down properly on the second version.
 - The compliance engine covers 4 core rules, not the full FMCSA rulebook (e.g. the 60/70-hour 7/8-day cycle isn't in there yet).
 - No automated tests yet.
 
