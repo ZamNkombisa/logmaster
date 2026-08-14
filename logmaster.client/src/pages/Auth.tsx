@@ -101,6 +101,20 @@ export function Auth() {
               : "Register a new account"}
           </h2>
 
+          {mode === "login" && (
+            <div className="bg-graphite-input border border-lime/30 rounded-lg px-3 py-2.5 mb-4 text-xs text-gray-300 leading-relaxed">
+              <p className="text-lime font-medium mb-1">
+                Try it without signing up:
+              </p>
+              <p>Driver: driver@logmaster.com</p>
+              <p>Dispatcher: dispatcher@logmaster.com</p>
+              <p>Admin: admin@logmaster.com</p>
+              <p className="mt-1 text-gray-500">
+                Password for all: Password123!
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {mode === "register" && (
               <Field
