@@ -25,11 +25,9 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
-        working-directory: logmaster.api
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-        working-directory: logmaster.api
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -53,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FBD6E1EB01FC4D53A9B62343ACA5A122 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1AFCC2E23B5B44348A14D87B00029886 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_28CC9B064C3E491F9C0B37D931B441AD }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_23E745ECEC43488190C9AFE046DD2440 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F180ED4432654E3AA3F01BB785DB8F5A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_95EE5D07909E4DF1A2E640DB41081476 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
